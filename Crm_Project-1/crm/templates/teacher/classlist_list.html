@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+    {% load my_tags %}
+     <div>
+     {% load rbac %}
+      {% if request|has_permission:'classlist_add' %}
+              <a class="btn btn-success btn-sm" style="margin: 3px" href="{% reverse_url request 'classlist_add'%}"> <i
+            class="fa fa-plus-square"></i> 添加 </a>
+         {% endif %}
+
+
+    </div>
+    <form action="" method="get" class="form-inline pull-right">
+        <input type="text" name="query" class="form-control">
+    <button class="btn btn-sm btn-primary">搜索</button>
+    </form>
+    <form action="" method="post" class="form-inline">
+        {% csrf_token %}
+        <select name="action" id="" class="form-control">
+            <option value="multi_del"> 批量删除</option>
+        </select>
+        <button class="btn btn-sm btn-primary">提交</button>
+        <table class="table table-bordered table-hover">
+
+
+            <thead>
+            <tr>
+                <th>选择</th>
+                <th>序号</th>
+                <th>班级名称</th>
+                <th>学费</th>
+                <th>开班日期</th>
+                <th>结业日期</th>
+                <th>老师</th>
+                <th>班级类型</th>
+               {% if request|has_permission:'classlist_edit' %}
+
+                <th>操作</th>
+                {% endif %}
+
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for classlist in all_classlist %}
+
+                <tr>
+                    <td>
+                        <input type="checkbox" name="ids" value="{{ classlist.pk }}">
+                    </td>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% reverse_url request 'course_record_list' classlist.pk %}">{{ classlist}}</a></td>
+                    <td>{{ classlist.price }}</td>
+                    <td>{{ classlist.memo }}</td>
+                    <td>{{ classlist.start_date|default:'未设置' }}</td>
+                    <td>{{ classlist.graduate_date|default:'未设置' }}</td>
+                    <td>{{ classlist.show_Customer }}</td>
+                    <td>{{ classlist.get_class_type_display }}</td>
+                     {% if request|has_permission:'classlist_edit' %}
+                    <td>
+                        <a href="{% reverse_url  request 'classlist_edit' classlist.pk %}"> <i class="fa fa-pencil-square-o"></i> </a>
+                    </td>
+                {% endif %}
+                </tr>
+
+            {% endfor %}
+
+
+            </tbody>
+        </table>
+    </form>
+
+{% endblock %}
